@@ -47,7 +47,7 @@ const AdminOrdersPage = () => {
           order => statusFilter === 'all' || order.status === statusFilter
         )
         .filter(order => {
-          const customerName = order.customer?.name || ''
+          const customerName = order.shippingAddress.fullName || ''
           const orderId = order.id || ''
           return (
             customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -60,8 +60,8 @@ const AdminOrdersPage = () => {
     if (!orders)
       return { totalRevenue: 0, totalOrders: 0, fulfilled: 0, pending: 0 }
     const totalRevenue = orders.reduce((acc, order) => acc + order.total, 0)
-    const fulfilled = orders.filter(o => o.status === 'delivered').length
-    const pending = orders.filter(o => o.status === 'pending').length
+    const fulfilled = orders.filter(o => o.status === 'Delivered').length
+    const pending = orders.filter(o => o.status === 'Pending').length
     return { totalRevenue, totalOrders: orders.length, fulfilled, pending }
   }
 
@@ -98,7 +98,7 @@ const AdminOrdersPage = () => {
     if (isLoading) {
       return (
         <div className='flex justify-center items-center h-64'>
-          <CircleLoader />
+          <CircleLoader visible={isLoading} />
         </div>
       )
     }
@@ -184,7 +184,7 @@ const AdminOrdersPage = () => {
           {filteredOrders.length > 0 ? (
             <OrdersTable
               orders={filteredOrders}
-              onUpdateStatus={handleUpdateStatus}
+              onStatusChange={handleUpdateStatus}
             />
           ) : (
             <div className='text-center py-16'>

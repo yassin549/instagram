@@ -1,27 +1,29 @@
 import { createMocks } from 'node-mocks-http'
 import handler from '../products'
-import { getDb } from '../../../lib/db'
+import { db } from '../../../lib/db'
 
-// Mock the getDb function
+// Mock the db object
 jest.mock('../../../lib/db', () => ({
-  getDb: jest.fn(),
+  db: {
+    read: jest.fn(),
+    write: jest.fn(),
+  },
 }))
 
 describe('/api/products', () => {
-  let mockDb
+  let mockDbData
 
   beforeEach(() => {
     // Reset mocks and setup the mock db before each test
     jest.clearAllMocks()
-    mockDb = {
-      data: {
-        products: [{ id: '1', name: 'Aura Sphere' }],
-        users: [],
-        orders: [],
-      },
-      write: jest.fn(),
+    mockDbData = {
+      products: [{ id: '1', name: 'Aura Sphere' }],
+      users: [],
+      orders: [],
     }
-    ;(getDb as jest.Mock).mockResolvedValue(mockDb)
+    ;(db.read as jest.Mock).mockResolvedValue(mockDbData)
+    // Mock the write function to resolve without doing anything
+    ;(db.write as jest.Mock).mockResolvedValue(undefined)
   })
 
   it('GET /api/products should return all products', async () => {

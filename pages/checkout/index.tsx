@@ -12,7 +12,7 @@ const CheckoutPage = () => {
     fullName: '',
     email: '',
     phone: '',
-    address: '',
+    addressLine1: '',
     city: '',
     postalCode: '',
     country: 'United States',
@@ -38,8 +38,8 @@ const CheckoutPage = () => {
       errors.phone = 'Phone number is required'
     }
 
-    if (!formData.address.trim()) {
-      errors.address = 'Address is required'
+    if (!formData.addressLine1.trim()) {
+      errors.addressLine1 = 'Address is required'
     }
 
     if (!formData.city.trim()) {
@@ -91,7 +91,7 @@ const CheckoutPage = () => {
             fullName: formData.fullName,
             email: formData.email,
             phone: formData.phone,
-            address: formData.address,
+            addressLine1: formData.addressLine1,
             city: formData.city,
             postalCode: formData.postalCode,
             country: formData.country,
@@ -108,9 +108,18 @@ const CheckoutPage = () => {
       clearCart()
 
       // Redirect to confirmation page
-      router.push(
-        `/checkout/confirmation?orderId=${data.order.id}&total=${cartTotal}`
-      )
+      router.push({
+        pathname: '/checkout/confirmation',
+        query: {
+          orderId: data.order.id,
+          total: cartTotal,
+          fullName: formData.fullName,
+          addressLine1: formData.addressLine1,
+          city: formData.city,
+          postalCode: formData.postalCode,
+          country: formData.country,
+        },
+      })
     } catch (error) {
       toast.error('Failed to place order. Please try again.')
       console.error('Order submission error:', error)
@@ -218,15 +227,15 @@ const CheckoutPage = () => {
                 </label>
                 <input
                   type='text'
-                  name='address'
-                  value={formData.address}
+                  name='addressLine1'
+                  value={formData.addressLine1}
                   onChange={handleChange}
                   className='w-full px-4 py-3 bg-white/5 dark:bg-gray-800/50 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50'
                   required
                 />
-                {formErrors.address && (
+                {formErrors.addressLine1 && (
                   <p className='text-sm text-red-400 mt-1'>
-                    {formErrors.address}
+                    {formErrors.addressLine1}
                   </p>
                 )}
               </div>

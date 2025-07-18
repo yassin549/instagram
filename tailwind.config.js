@@ -16,5 +16,5 @@ module.exports = {
       textShadow: theme.accents,
     },
   },
-  plugins: [require('tailwindcss-textshadow')],
+  
 }

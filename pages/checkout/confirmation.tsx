@@ -1,20 +1,22 @@
-import React from 'react'
-import { FiCheckCircle, FiTruck, FiClock, FiMapPin } from 'react-icons/fi'
+import React, { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
 import Link from 'next/link'
+import { FiCheckCircle, FiTruck, FiClock, FiMapPin } from 'react-icons/fi'
+import CircleLoader from '@/components/CircleLoader'
 
 interface OrderConfirmationProps {
   orderId: string
   orderTotal: number
   shippingAddress: {
     fullName: string
-    address: string
+    addressLine1: string
     city: string
     postalCode: string
     country: string
   }
 }
 
-const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
+const OrderConfirmationDisplay: React.FC<OrderConfirmationProps> = ({
   orderId,
   orderTotal,
   shippingAddress,
@@ -22,7 +24,6 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
   return (
     <div className='container mx-auto px-4 py-16'>
       <div className='max-w-4xl mx-auto'>
-        {/* Hero Section */}
         <div className='text-center mb-12'>
           <FiCheckCircle className='w-24 h-24 mx-auto text-green-400 mb-4' />
           <h1 className='text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 mb-4'>
@@ -33,10 +34,8 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
           </p>
         </div>
 
-        {/* Order Details */}
         <div className='bg-white/5 dark:bg-gray-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-8'>
           <div className='space-y-8'>
-            {/* Order Summary */}
             <div className='space-y-4'>
               <h2 className='text-xl font-bold text-white'>Order Summary</h2>
               <div className='grid grid-cols-2 gap-4'>
@@ -53,7 +52,6 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
               </div>
             </div>
 
-            {/* Shipping Info */}
             <div className='space-y-4'>
               <h2 className='text-xl font-bold text-white'>
                 Shipping Information
@@ -64,7 +62,9 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
                   <p className='font-medium text-white'>
                     {shippingAddress.fullName}
                   </p>
-                  <p className='text-gray-400'>{shippingAddress.address}</p>
+                  <p className='text-gray-400'>
+                    {shippingAddress.addressLine1}
+                  </p>
                   <p className='text-gray-400'>
                     {shippingAddress.city}, {shippingAddress.postalCode}
                   </p>
@@ -73,7 +73,6 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
               </div>
             </div>
 
-            {/* Order Status */}
             <div className='space-y-4'>
               <h2 className='text-xl font-bold text-white'>Order Status</h2>
               <div className='bg-white/5 dark:bg-gray-800/50 p-4 rounded-lg border border-white/10'>
@@ -89,7 +88,6 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
               </div>
             </div>
 
-            {/* Estimated Delivery */}
             <div className='space-y-4'>
               <h2 className='text-xl font-bold text-white'>
                 Estimated Delivery
@@ -103,7 +101,6 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
               </div>
             </div>
 
-            {/* Total */}
             <div className='border-t border-white/10 pt-4 text-right'>
               <p className='text-xl font-bold text-white'>
                 Total: ${orderTotal.toFixed(2)}
@@ -112,7 +109,6 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
           </div>
         </div>
 
-        {/* Continue Shopping */}
         <div className='text-center mt-12'>
           <Link href='/products'>
             <button className='bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-4 rounded-lg hover:opacity-90 transition-all'>
@@ -125,4 +121,71 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
   )
 }
 
-export default OrderConfirmation
+const ConfirmationPage = () => {
+  const router = useRouter()
+  const [orderData, setOrderData] = useState<OrderConfirmationProps | null>(
+    null
+  )
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (router.isReady) {
+      const {
+        orderId,
+        total,
+        fullName,
+        addressLine1,
+        city,
+        postalCode,
+        country,
+      } = router.query
+
+      if (orderId && total && fullName && addressLine1) {
+        setOrderData({
+          orderId: orderId as string,
+          orderTotal: parseFloat(total as string),
+          shippingAddress: {
+            fullName: fullName as string,
+            addressLine1: addressLine1 as string,
+            city: city as string,
+            postalCode: postalCode as string,
+            country: country as string,
+          },
+        })
+      } else {
+        setError('Order details are missing. Please contact support.')
+      }
+      setIsLoading(false)
+    }
+  }, [router.isReady, router.query])
+
+  if (isLoading) {
+    return (
+      <div className='flex justify-center items-center min-h-screen'>
+        <CircleLoader visible={true} />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className='container mx-auto px-4 py-16 text-center'>
+        <h1 className='text-2xl text-red-500'>{error}</h1>
+        <Link href='/'>
+          <button className='mt-4 text-blue-400 hover:underline'>
+            Go to Homepage
+          </button>
+        </Link>
+      </div>
+    )
+  }
+
+  if (!orderData) {
+    return null // Or a fallback UI
+  }
+
+  return <OrderConfirmationDisplay {...orderData} />
+}
+
+export default ConfirmationPage

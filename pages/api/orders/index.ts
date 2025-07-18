@@ -52,6 +52,7 @@ export default async function handler(
           paymentMethod,
           status: 'Pending',
           createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         }
 
         const data = await db.read()

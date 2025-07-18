@@ -1,29 +1,29 @@
 import { createMocks } from 'node-mocks-http'
 import handler from '../products/[productId]'
-import { getDb } from '../../../lib/db'
+import { db } from '../../../lib/db'
 
-// Mock the getDb function
+// Mock the db object
 jest.mock('../../../lib/db', () => ({
-  getDb: jest.fn(),
+  db: {
+    read: jest.fn(),
+    write: jest.fn(),
+  },
 }))
 
 describe('/api/products/[productId]', () => {
-  let mockDb
+  let mockDbData
 
   beforeEach(() => {
     jest.clearAllMocks()
-    mockDb = {
-      data: {
-        products: [
-          { id: '1', name: 'Aura Sphere' },
-          { id: '2', name: 'Chrono-Shard' },
-        ],
-        users: [],
-        orders: [],
-      },
-      write: jest.fn(),
+    mockDbData = {
+      products: [
+        { id: '1', name: 'Aura Sphere' },
+        { id: '2', name: 'Chrono-Shard' },
+      ],
+      users: [],
+      orders: [],
     }
-    ;(getDb as jest.Mock).mockResolvedValue(mockDb)
+    ;(db.read as jest.Mock).mockResolvedValue(mockDbData)
   })
 
   it('GET should return a single product for a valid ID', async () => {

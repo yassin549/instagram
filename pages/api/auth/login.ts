@@ -26,7 +26,7 @@ export default async function handler(
 
   if (dbOverride) {
     // For testing: use the in-memory db override
-    user = dbOverride.data.users.find((u: User) => u.email === email)
+    user = dbOverride.users.find((u: User) => u.email === email)
   } else {
     // For production: read from the JSON file
     const data = await db.read()

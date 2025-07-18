@@ -36,6 +36,7 @@ export interface Order {
   paymentMethod: 'Credit Card' | 'Cash on Delivery'
   status: OrderStatus
   createdAt: string
+  updatedAt: string
 }
 
 export interface User {
