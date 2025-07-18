@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { useCart } from '@/context/CartContext'
 import { CartItem } from '@/types'
 import { useRouter } from 'next/router'
@@ -39,10 +40,12 @@ const Cart = () => {
                 key={item.id}
                 className='flex items-center mb-4 border-b pb-4'
               >
-                <img
+                <Image
                   src={item.images[0]}
                   alt={item.name}
-                  className='w-20 h-20 object-cover rounded-md mr-4'
+                  width={80}
+                  height={80}
+                  className='object-cover rounded-md mr-4'
                 />
                 <div className='flex-grow'>
                   <h3 className='font-semibold'>{item.name}</h3>
